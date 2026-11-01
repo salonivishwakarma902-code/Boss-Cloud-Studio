@@ -44,6 +44,7 @@ def main():
     if blend_file.exists():
         print(f"[INFO] Found Blender Scene File: {blend_file}")
         render_cmd = [
+            "xvfb-run", "-a",
             "blender", "-b", str(blend_file),
             "-E", args.engine,
             "-s", args.start,
@@ -55,6 +56,7 @@ def main():
     elif gen_script.exists():
         print(f"[INFO] Found Procedural Python Scene: {gen_script}")
         render_cmd = [
+            "xvfb-run", "-a",
             "blender", "-b",
             "-P", str(gen_script),
             "--",

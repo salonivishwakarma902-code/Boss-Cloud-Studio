@@ -35,10 +35,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up System Tools (Blender & FFmpeg)
+      - name: Set up System Tools (Blender, FFmpeg & OpenGL Headless)
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq blender ffmpeg
+          sudo apt-get install -y -qq blender ffmpeg xvfb libegl1 libgl1 libgl1-mesa-dri libglu1-mesa
 
       - name: Verify Blender Version
         run: |
