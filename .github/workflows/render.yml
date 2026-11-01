@@ -25,6 +25,9 @@ on:
         required: true
         default: '900'
 
+permissions:
+  contents: write
+
 jobs:
   cloud-render:
     name: "Render ${{ inputs.project }} in Cloud"
@@ -54,7 +57,18 @@ jobs:
             --start "${{ inputs.start_frame }}" \
             --end "${{ inputs.end_frame }}"
 
-      - name: Upload Final Video Artifact
+      - name: Publish Direct MP4 to Releases (1-Click Download)
+        uses: softprops/action-gh-release@v2
+        if: success()
+        with:
+          tag_name: "render-${{ github.run_number }}"
+          name: "Boss Render: ${{ inputs.project }} (Run #${{ github.run_number }})"
+          body: "Direct 1-click MP4 download link (No login required, plays everywhere)."
+          files: output/*.mp4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Backup Artifact
         uses: actions/upload-artifact@v4
         with:
           name: "Boss_${{ inputs.project }}_Render"
