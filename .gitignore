@@ -1,0 +1,8 @@
+# Boss Cloud Studio Ignore
+/output/
+/tmp/
+*.pyc
+__pycache__/
+*.log
+.DS_Store
+Thumbs.db

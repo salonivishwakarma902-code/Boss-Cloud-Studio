@@ -1,0 +1,62 @@
+name: Boss Cloud 3D Render Engine
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'प्रोजेक्ट का नाम (Folder in projects/)'
+        required: true
+        default: '01_isro_rocket'
+      engine:
+        description: 'रेंडर इंजन (BLENDER_WORKBENCH, BLENDER_EEVEE, CYCLES)'
+        required: true
+        type: choice
+        options:
+          - 'BLENDER_WORKBENCH'
+          - 'BLENDER_EEVEE'
+          - 'CYCLES'
+        default: 'BLENDER_WORKBENCH'
+      start_frame:
+        description: 'Start Frame'
+        required: true
+        default: '1'
+      end_frame:
+        description: 'End Frame'
+        required: true
+        default: '900'
+
+jobs:
+  cloud-render:
+    name: "Render ${{ inputs.project }} in Cloud"
+    runs-on: ubuntu-latest
+    timeout-minutes: 360 # 6 hours max
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up System Tools (Blender & FFmpeg)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq blender ffmpeg
+
+      - name: Verify Blender Version
+        run: |
+          blender --version
+          ffmpeg -version | head -n 1
+
+      - name: Run Cloud 3D Render
+        run: |
+          mkdir -p output
+          python3 engine/render_in_cloud.py \
+            --project "${{ inputs.project }}" \
+            --engine "${{ inputs.engine }}" \
+            --start "${{ inputs.start_frame }}" \
+            --end "${{ inputs.end_frame }}"
+
+      - name: Upload Final Video Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Boss_${{ inputs.project }}_Render"
+          path: output/*.mp4
+          retention-days: 14
